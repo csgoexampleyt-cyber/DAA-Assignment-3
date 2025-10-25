@@ -149,3 +149,48 @@ class UnionFind {
         return true;
     }
 }
+
+//MST ALGORITHMS
+
+class MSTAlgorithms {
+
+    public static MSTResult primsAlgorithm(Graph graph) {
+        MSTResult result = new MSTResult("Prim's Algorithm", graph.vertices, graph.getEdgeCount());
+        if (graph.vertices == 0) return result;
+
+        long startTime = System.nanoTime();
+        boolean[] visited = new boolean[graph.vertices];
+        PriorityQueue<Edge> pq = new PriorityQueue<>();
+        int operations = 0;
+
+        visited[0] = true;
+        pq.addAll(graph.adjList.get(0));
+
+        while (!pq.isEmpty() && result.mstEdges.size() < graph.vertices - 1) {
+            Edge edge = pq.poll();
+            operations++;
+
+            if (visited[edge.to]) continue;
+
+            visited[edge.to] = true;
+            result.mstEdges.add(edge);
+            result.totalCost += edge.weight;
+
+            for (Edge next : graph.adjList.get(edge.to)) {
+                if (!visited[next.to]) {
+                    pq.offer(next);
+                }
+            }
+        }
+
+        long endTime = System.nanoTime();
+        result.operations = operations;
+        result.executionTimeMs = (endTime - startTime) / 1_000_000.0;
+        result.isConnected = result.mstEdges.size() == graph.vertices - 1;
+
+        return result;
+    }
+
+
+
+}
