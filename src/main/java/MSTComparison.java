@@ -191,6 +191,32 @@ class MSTAlgorithms {
         return result;
     }
 
+    public static MSTResult kruskalsAlgorithm(Graph graph) {
+        MSTResult result = new MSTResult("Kruskal's Algorithm", graph.vertices, graph.getEdgeCount());
+        if (graph.vertices == 0) return result;
 
+        long startTime = System.nanoTime();
+        List<Edge> sortedEdges = new ArrayList<>(graph.edges);
+        Collections.sort(sortedEdges);
+        int operations = 0;
 
+        UnionFind uf = new UnionFind(graph.vertices);
+
+        for (Edge edge : sortedEdges) {
+            operations++;
+            if (uf.union(edge.from, edge.to)) {
+                result.mstEdges.add(edge);
+                result.totalCost += edge.weight;
+
+                if (result.mstEdges.size() == graph.vertices - 1) break;
+            }
+        }
+
+        long endTime = System.nanoTime();
+        result.operations = operations + uf.operations;
+        result.executionTimeMs = (endTime - startTime) / 1_000_000.0;
+        result.isConnected = result.mstEdges.size() == graph.vertices - 1;
+
+        return result;
+    }
 }
