@@ -329,3 +329,55 @@ class ResultData {
         return json;
     }
 }
+
+//MAIN CLASS
+
+public class MSTComparison {
+
+    public static void main(String[] args) {
+        System.out.println(" ");
+        System.out.println("MINIMUM SPANNING TREE - ALGORITHM COMPARISON");
+        System.out.println(" ");
+
+        try {
+            List<GraphData> graphs = FileHandler.loadGraphsFromJson("src/main/java/assign_3_input.json");
+            List<ResultData> allResults = new ArrayList<>();
+
+            for (GraphData graphData : graphs) {
+                System.out.println("\n" + "=".repeat(60));
+                System.out.println("Processing: " + graphData.name);
+                System.out.println("Vertices: " + graphData.graph.vertices +
+                        ", Edges: " + graphData.graph.getEdgeCount());
+                System.out.println("=".repeat(60));
+
+                MSTResult primResult = MSTAlgorithms.primsAlgorithm(graphData.graph);
+                MSTResult kruskalResult = MSTAlgorithms.kruskalsAlgorithm(graphData.graph);
+
+                System.out.printf("Prim's MST Cost: %.2f | Kruskal's MST Cost: %.2f%n",
+                        primResult.totalCost, kruskalResult.totalCost);
+                System.out.println("Prim Operations: " + primResult.operations +
+                        ", Kruskal Operations: " + kruskalResult.operations);
+                System.out.printf("Prim Time: %.4f ms | Kruskal Time: %.4f ms%n",
+                        primResult.executionTimeMs, kruskalResult.executionTimeMs);
+
+                if (Math.abs(primResult.totalCost - kruskalResult.totalCost) < 0.01) {
+                    System.out.println("✓ MST costs match");
+                } else {
+                    System.out.println("✗ MST costs differ");
+                }
+
+                allResults.add(new ResultData(graphData.name, primResult));
+                allResults.add(new ResultData(graphData.name, kruskalResult));
+            }
+
+            System.out.println("\nSaving results...");
+            FileHandler.saveResultsToJson(allResults, "assign_3_output.json");
+            FileHandler.generateComparisonCsv(allResults, "mst_comparison.csv");
+            System.out.println("✓ Output saved: assign_3_output.json & mst_comparison.csv");
+
+        } catch (IOException e) {
+            System.err.println("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+}
