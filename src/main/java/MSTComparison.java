@@ -220,3 +220,112 @@ class MSTAlgorithms {
         return result;
     }
 }
+
+//FILE MANAGEMENT
+
+class FileHandler {
+
+    public static List<GraphData> loadGraphsFromJson(String filename) throws IOException {
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(new FileReader(filename), JsonObject.class);
+        JsonArray graphsArray = jsonObject.getAsJsonArray("graphs");
+
+        List<GraphData> graphs = new ArrayList<>();
+
+        for (JsonElement element : graphsArray) {
+            JsonObject graphObj = element.getAsJsonObject();
+            String name = graphObj.has("name") ? graphObj.get("name").getAsString() : "Unnamed Graph";
+
+            JsonArray nodesArray = graphObj.getAsJsonArray("nodes");
+            Map<String, Integer> nodeIndexMap = new HashMap<>();
+            int index = 0;
+            for (JsonElement node : nodesArray) {
+                nodeIndexMap.put(node.getAsString(), index++);
+            }
+
+            Graph graph = new Graph(nodesArray.size());
+            Set<String> edgeSet = new HashSet<>();
+            JsonArray edgesArray = graphObj.getAsJsonArray("edges");
+
+            for (JsonElement edgeElement : edgesArray) {
+                JsonObject edgeObj = edgeElement.getAsJsonObject();
+                String fromStr = edgeObj.get("from").getAsString();
+                String toStr = edgeObj.get("to").getAsString();
+                double weight = edgeObj.get("weight").getAsDouble();
+
+                int from = nodeIndexMap.get(fromStr);
+                int to = nodeIndexMap.get(toStr);
+                String key = Math.min(from, to) + "-" + Math.max(from, to);
+
+                if (!edgeSet.contains(key)) {
+                    graph.addEdge(from, to, weight);
+                    edgeSet.add(key);
+                }
+            }
+
+            graphs.add(new GraphData(name, graph));
+        }
+
+        return graphs;
+    }
+
+    public static void saveResultsToJson(List<ResultData> results, String filename) throws IOException {
+        JsonObject output = new JsonObject();
+        JsonArray resultsArray = new JsonArray();
+
+        for (ResultData result : results) {
+            resultsArray.add(result.toJson());
+        }
+
+        output.add("results", resultsArray);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        try (FileWriter writer = new FileWriter(filename)) {
+            gson.toJson(output, writer);
+        }
+    }
+
+    public static void generateComparisonCsv(List<ResultData> results, String filename) throws IOException {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(filename))) {
+            writer.println("Graph,Algorithm,Vertices,Edges,MST Cost,Operations,Time (ms)");
+            for (ResultData result : results) {
+                writer.printf("%s,%s,%d,%d,%.2f,%d,%.4f%n",
+                        result.graphName,
+                        result.mstResult.algorithm,
+                        result.mstResult.vertices,
+                        result.mstResult.originalEdges,
+                        result.mstResult.totalCost,
+                        result.mstResult.operations,
+                        result.mstResult.executionTimeMs
+                );
+            }
+        }
+    }
+}
+
+//HELPER CLASSES
+
+class GraphData {
+    String name;
+    Graph graph;
+
+    public GraphData(String name, Graph graph) {
+        this.name = name;
+        this.graph = graph;
+    }
+}
+
+class ResultData {
+    String graphName;
+    MSTResult mstResult;
+
+    public ResultData(String graphName, MSTResult mstResult) {
+        this.graphName = graphName;
+        this.mstResult = mstResult;
+    }
+
+    public JsonObject toJson() {
+        JsonObject json = mstResult.toJson();
+        json.addProperty("graph_name", graphName);
+        return json;
+    }
+}
