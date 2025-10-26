@@ -134,6 +134,8 @@ Choose Prim's Algorithm When:
 Practical Decision Framework:
 For General Purpose Applications:
 
+<img width="1207" height="730" alt="image" src="https://github.com/user-attachments/assets/5213b16e-ef91-4969-8384-c7eeba08a3a6" />
+
 
 Graphs with < 500 vertices: Either algorithm performs well; choose based on data structure convenience
 Graphs with 500-1000 vertices and sparse connectivity: Prim's algorithm shows consistent advantage
