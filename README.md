@@ -33,6 +33,7 @@ At the largest scales, Kruskal’s algorithm demonstrated slightly faster perfor
 Key Observation:
 For all test cases, both algorithms produced identical MST (Minimum Spanning Tree) costs, confirming their correctness and consistency.
 
+<img width="1164" height="710" alt="23432" src="https://github.com/user-attachments/assets/f913b895-702e-4aeb-9fda-c8ac6be93ec6" />
 
 
 2. Comparison Between Prim’s and Kruskal’s Algorithms
