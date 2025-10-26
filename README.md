@@ -151,6 +151,11 @@ Kruskal's requires: sorting capability and Union-Find structure
 Prim's requires: priority queue and visited tracking
 
 
+Bonus:
+<img width="642" height="659" alt="image" src="https://github.com/user-attachments/assets/a937e45a-1b14-46e4-a9a1-800cc336e5f0" />
+
+
+
 4. References
 Course Materials:
 
